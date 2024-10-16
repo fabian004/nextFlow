@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 interface MessageNodeProps {
   data: {
-    label: string; // Puedes agregar más propiedades aquí si es necesario
+    label: string;
   };
 }
 
