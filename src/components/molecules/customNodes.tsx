@@ -1,7 +1,13 @@
 import { Handle, Position } from '@xyflow/react';
 import { useState } from 'react';
 
-export const MessageNode = ({ data }: any) => (
+interface MessageNodeProps {
+  data: {
+    label: string; // Puedes agregar más propiedades aquí si es necesario
+  };
+}
+
+export const MessageNode = ({ data }: MessageNodeProps) => (
   <div style={{ backgroundColor: 'green', color: 'white', padding: '10px', borderRadius: '5px', marginBottom: '10px' }}>
     <Handle type="target" position={Position.Top} />
     <strong>{data.label}</strong>
@@ -9,7 +15,7 @@ export const MessageNode = ({ data }: any) => (
   </div>
 );
 
-export const TextAreaNode = ({ data }: any) => (
+export const TextAreaNode = ({ data }: MessageNodeProps) => (
   <div style={{ backgroundColor: 'orange', padding: '10px', borderRadius: '5px', marginBottom: '10px' }}>
     <Handle type="target" position={Position.Top} />
     <strong>{data.label}</strong>
@@ -21,7 +27,7 @@ export const TextAreaNode = ({ data }: any) => (
 );
 
 
-export const MultiSelectNode = ({ data }: any) => {
+export const MultiSelectNode = ({ data }: MessageNodeProps) => {
   const [options, setOptions] = useState(['PIN', 'Password']);
   const [newOption, setNewOption] = useState('');
 
