@@ -22,6 +22,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: red !important;
 }
 
 * {
@@ -40,3 +41,8 @@ a {
     color-scheme: dark;
   }
 }
+
+.active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
