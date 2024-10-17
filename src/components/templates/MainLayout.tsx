@@ -4,8 +4,8 @@ import Navbar from '../organisms/Navbar';
 import Sidebar from '../organisms/Sidebar';
 import Breadcrumb from '../organisms/Breadcrumb';
 
-const drawerWidth = 240;
-const collapsedDrawerWidth = 90;
+const drawerWidth = 260;
+const collapsedDrawerWidth = 80;
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(true);
@@ -23,7 +23,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
 
     return (
-        <Grid container sx={{ height: '100vh' }}>
+        <Grid container sx={{ height: '100vh', background:"#f8fafa" }}>
             {/* Sidebar */}
             <Sidebar
                 isDrawerOpen={isDrawerOpen}
@@ -35,7 +35,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             />
 
             {/* Main Content */}
-            <Grid item xs sx={{ flexGrow: 1 }}>
+            <Grid item sx={{ flexGrow: 1, padding:2}}>
                 {/* Navbar */}
                 <Navbar
                     toggleDrawer={toggleDrawer}
@@ -45,7 +45,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     isSmallScreen={isSmallScreen}
                 /> 
                 {/* Page Content */}
-                <Grid  sx={{ padding: 2, paddingBottom: 1 , marginTop: '64px' }}>
+                <Grid  sx={{ paddingBottom: 1 , marginTop: '64px',paddingLeft:1 }}>
                     <Breadcrumb /> 
                 </Grid>
                 {/* Page Content */}
@@ -56,5 +56,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </Grid>
     );
 };
+
 
 export default MainLayout;

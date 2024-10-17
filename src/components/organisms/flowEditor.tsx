@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ReactFlow, addEdge, MarkerType, useEdgesState, useNodesState, Node } from '@xyflow/react';
+import { ReactFlow, addEdge, MarkerType, useEdgesState, useNodesState, Node, Background, BackgroundVariant } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import NodeEditPanel from '../molecules/nodeEditPanel';
 import { MessageNode, MultiSelectNode, TextAreaNode } from '../molecules/customNodes';
@@ -80,7 +80,7 @@ const FlowEditor: React.FC = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, height: 'calc(100vh - 20px)', backgroundColor: '#f9f9f9' }}>
+    <Box sx={{  height: 'calc(100vh - 20px)', width: "100%", backgroundColor: '#f9f9f9' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -91,7 +91,7 @@ const FlowEditor: React.FC = () => {
         onDrop={onDrop}
         onDragOver={(event) => event.preventDefault()}
         onNodeClick={onNodeClick}
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%', background: '#e0f7fa' }}
       />
       {selectedNode && (
         <NodeEditPanel

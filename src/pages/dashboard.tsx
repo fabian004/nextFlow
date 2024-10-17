@@ -12,6 +12,7 @@ const DashboardPage: React.FC = () => {
   return (
     <MainLayout>
         <NodeSidebar onDragStart={onDragStart} />
+        <br/>
         <FlowEditor />
     </MainLayout>
   );

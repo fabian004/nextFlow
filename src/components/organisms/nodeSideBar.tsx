@@ -8,15 +8,29 @@ interface NodeSidebarProps {
 
 const NodeSidebar: React.FC<NodeSidebarProps> = ({ onDragStart }) => {
   return (
-    <Box sx={{ width: '100%', padding: '20px', backgroundColor: '#f4f4f4' }}>
-      <Typography variant="h6">Drag Nodes</Typography>
-      <Box sx={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        <DraggableNode type="messageNode" label="Message Node" onDragStart={onDragStart} />
-        <DraggableNode type="textAreaNode" label="Text Area Node" onDragStart={onDragStart} />
-        <DraggableNode type="multiSelectNode" label="MultiSelect Node" onDragStart={onDragStart} />
+    <Box
+      sx={{
+        width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+      }}
+    >
+      <Box sx={{
+        paddingTop: '20px',
+        paddingLeft: '20px'}}
+      >
+        <Typography variant="h6">Drag Nodes</Typography>
+        <Box sx={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <DraggableNode type="messageNode" label="Message Node" onDragStart={onDragStart} />
+          <DraggableNode type="textAreaNode" label="Text Area Node" onDragStart={onDragStart} />
+          <DraggableNode type="multiSelectNode" label="MultiSelect Node" onDragStart={onDragStart} />
+        </Box>
       </Box>
     </Box>
   );
 };
+
+
 
 export default NodeSidebar;
