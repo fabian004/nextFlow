@@ -1,6 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 import { useState } from 'react';
-import { Box, Typography, Button, TextField, IconButton, TextareaAutosize } from '@mui/material';
+import { Box, Typography, TextField, IconButton, TextareaAutosize } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 

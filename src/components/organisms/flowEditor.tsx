@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ReactFlow, addEdge, MarkerType, useEdgesState, useNodesState, Node, Background, BackgroundVariant } from '@xyflow/react';
+import { ReactFlow, addEdge, MarkerType, useEdgesState, useNodesState, Node } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import NodeEditPanel from '../molecules/nodeEditPanel';
 import { MessageNode, MultiSelectNode, TextAreaNode } from '../molecules/customNodes';
