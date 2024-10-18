@@ -1,10 +1,21 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ReactFlow, addEdge, MarkerType, useEdgesState, useNodesState, Node } from '@xyflow/react';
+import React, { useCallback, useState } from 'react';
+import { ReactFlow, applyEdgeChanges, MarkerType, Node, EdgeChange, NodeChange } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import NodeEditPanel from '../molecules/nodeEditPanel';
 import { MessageNode, MultiSelectNode, TextAreaNode } from '../molecules/customNodes';
-import { initialEdges, initialNodes } from '@/utils/initialStates';
-import { Box } from '@mui/material';
+import { Box, SpeedDial, SpeedDialAction } from '@mui/material';
+import MessageIcon from '@mui/icons-material/Message';
+import TextFieldsIcon from '@mui/icons-material/TextFields';
+import SelectAllIcon from '@mui/icons-material/SelectAll';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/redux';
+import {
+  setActualNode,
+  openDrawer,
+  setNodes,
+  setEdges,
+  addNode as addReduxNode,
+  addEdge as addReduxEdge,
+} from '@/redux/drawerSlice';
 
 const nodeTypes = {
   messageNode: MessageNode,
@@ -13,39 +24,36 @@ const nodeTypes = {
 };
 
 const FlowEditor: React.FC = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [nodeCount, setNodeCount] = useState(initialNodes.length);
-  const [selectedNode, setSelectedNode] = useState<Node<any> | null>(null);
-  const [selectedNodeLabel, setSelectedNodeLabel] = useState('');
+  const dispatch = useDispatch();
+  const { nodes, edges } = useSelector((state: RootState) => state.drawer);
+  const [nodeCount, setNodeCount] = useState(nodes.length);
 
   const onConnect = useCallback(
-    (params:any) => {
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...params,
-            animated: true,
-            markerEnd: { type: MarkerType.ArrowClosed, width: 10, height: 10, color: 'black' },
-            style: { stroke: 'black', strokeWidth: 2 },
-          },
-          eds
-        )
-      );
+    (params: any) => {
+      const newEdge = {
+        id: `edge-${params.source}-${params.target}`,
+        ...params,
+        animated: true,
+        markerEnd: { type: MarkerType.ArrowClosed, width: 10, height: 10, color: 'black' },
+        style: { stroke: 'black', strokeWidth: 2 },
+      };
+      console.log('Adding new edge:', newEdge);
+      dispatch(addReduxEdge(newEdge));
     },
-    [setEdges]
+    [dispatch]
   );
+  
 
   const onDrop = (event: any) => {
     event.preventDefault();
     const reactFlowBounds = event.target.getBoundingClientRect();
     const type = event.dataTransfer.getData('application/reactflow');
-  
+
     const position = {
       x: event.clientX - reactFlowBounds.left,
       y: event.clientY - reactFlowBounds.top,
     };
-  
+
     if (type) {
       addNode(type, position);
     }
@@ -58,47 +66,79 @@ const FlowEditor: React.FC = () => {
       position,
       data: { label: `Node ${nodeCount + 1}` },
     };
-    setNodes((nds) => [...nds, newNode]);
+    dispatch(addReduxNode(newNode));
     setNodeCount((count) => count + 1);
   };
 
   const onNodeClick = (event: any, node: Node) => {
-    setSelectedNode(node);
+    console.log(node)
+    dispatch(setActualNode(node));
+    dispatch(openDrawer());
   };
 
-  useEffect(() => {
-    if (selectedNode) {
-      setSelectedNodeLabel(selectedNode.data.label);
-    }
-  }, [selectedNode]);
-
-  const updateNodeLabel = (newLabel: string) => {
-    setNodes((nds) =>
-      nds.map((node) => (node.id === selectedNode?.id ? { ...node, data: { ...node.data, label: newLabel } } : node))
-    );
-    setSelectedNodeLabel(newLabel);
+  const handleDragStart = (event: React.DragEvent<HTMLDivElement>, type: string) => {
+    event.dataTransfer.setData('application/reactflow', type);
+    event.dataTransfer.effectAllowed = 'move';
   };
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      const updatedEdges = applyEdgeChanges(changes, edges);
+      dispatch(setEdges(updatedEdges));
+    },
+    [edges, dispatch]
+  );
+
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      dispatch(setNodes(changes));
+    },
+    [nodes, dispatch]
+  );
 
   return (
-    <Box sx={{  height: 'calc(100vh - 20px)', width: "100%", backgroundColor: '#f9f9f9' }}>
+    <Box sx={{ height: 'calc(100vh - 20px)', width: '100%', backgroundColor: '#f9f9f9', position: 'relative' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        onEdgesChange={(changes) => {
+          console.log('onEdgesChange called', changes);
+          onEdgesChange(changes);
+        }}
         onConnect={onConnect}
         onDrop={onDrop}
         onDragOver={(event) => event.preventDefault()}
         onNodeClick={onNodeClick}
         style={{ width: '100%', height: '100%', background: '#e0f7fa' }}
       />
-      {selectedNode && (
-        <NodeEditPanel
-          selectedNodeLabel={selectedNodeLabel}
-          onLabelChange={(newLabel) => updateNodeLabel(newLabel)}
+
+      <SpeedDial
+        ariaLabel="Add Node"
+        sx={{ position: 'absolute', top: 16, left: 16 }}
+        icon={<MessageIcon />}
+        direction="right"
+      >
+        <SpeedDialAction
+          icon={<MessageIcon sx={{ color: 'green' }} />}
+          tooltipTitle="Message"
+          onDragStart={(e) => handleDragStart(e, 'messageNode')}
+          draggable
         />
-      )}
+        <SpeedDialAction
+          icon={<TextFieldsIcon sx={{ color: 'yellow' }} />}
+          tooltipTitle="Text"
+          onDragStart={(e) => handleDragStart(e, 'textAreaNode')}
+          draggable
+        />
+        <SpeedDialAction
+          icon={<SelectAllIcon sx={{ color: 'purple' }} />}
+          tooltipTitle="Validator"
+          onDragStart={(e) => handleDragStart(e, 'multiSelectNode')}
+          draggable
+        />
+      </SpeedDial>
     </Box>
   );
 };

@@ -10,17 +10,24 @@ interface MessageNodeProps {
   };
 }
 
+const handleDefault = {
+  width: '10px', 
+  height: '10px', 
+  borderRadius: '50%'
+};
+
+
 export const MessageNode = ({ data }: MessageNodeProps) => (
-  <Box sx={{ backgroundColor: 'green', color: 'white', p: 2, borderRadius: 1, mb: 2 }}>
-    <Handle type="target" position={Position.Top} />
+  <Box sx={{ backgroundColor: 'green', color: 'white', p: 2, borderRadius: 1 }}>
+    <Handle type="target" position={Position.Top} style={handleDefault}/>
     <Typography variant="body1" fontWeight="bold">{data.label}</Typography>
-    <Handle type="source" position={Position.Bottom} />
+    <Handle type="source" position={Position.Bottom} style={handleDefault} />
   </Box>
 );
 
 export const TextAreaNode = ({ data }: MessageNodeProps) => (
-  <Box sx={{ backgroundColor: 'orange', p: 2, borderRadius: 1, mb: 2 }}>
-    <Handle type="target" position={Position.Top} />
+  <Box sx={{ backgroundColor: 'orange', p: 2, borderRadius: 1 }}>
+    <Handle type="target" position={Position.Top} style={handleDefault}/>
     <Typography variant="body1" fontWeight="bold">{data.label}</Typography>
     <Box sx={{ mt: 2 }}>
       <TextareaAutosize
@@ -29,7 +36,7 @@ export const TextAreaNode = ({ data }: MessageNodeProps) => (
         style={{ width: '100%', resize: 'none' }}
       />
     </Box>
-    <Handle type="source" position={Position.Bottom} />
+    <Handle type="source" position={Position.Bottom} style={handleDefault} />
   </Box>
 );
 
@@ -50,7 +57,7 @@ export const MultiSelectNode = ({ data }: MessageNodeProps) => {
 
   return (
     <Box sx={{ backgroundColor: 'purple', color: 'white', p: 2, borderRadius: 1, mb: 2, position: 'relative' }}>
-      <Handle type="target" position={Position.Top} />
+      <Handle type="target" position={Position.Top} style={handleDefault} />
       
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="body1" fontWeight="bold">{data.label}</Typography>
@@ -69,7 +76,8 @@ export const MultiSelectNode = ({ data }: MessageNodeProps) => {
               type="source"
               position={Position.Right}
               id={`option-${index}`}
-              style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', right: '-20px' }}
+              style={{...handleDefault, position: 'absolute', top: '50%', transform: 'translateY(-50%)', right: '-20px' }
+            }
             />
 
             <IconButton onClick={() => removeOption(index)} sx={{ color: 'white', ml: 1 }}>
