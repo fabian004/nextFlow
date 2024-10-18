@@ -4,8 +4,6 @@ import MessageIcon from '@mui/icons-material/Message';
 import { closeDrawer, updateActualNodeLabel, updateActualNodeQuestion, removeNode } from '@/redux/drawerSlice'; 
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux';
-import Input from '../atoms/input';
-import Select from '../atoms/Select';
 import NodeEditor from '../molecules/NodeEditor';
 
 export const NodeMessageTypes = {
@@ -63,7 +61,7 @@ const EditNodeDrawer: React.FC<EditNodeDrawerProps> = ({ dispatch }) => {
                             Cambios
                         </Typography>
                     </Box>
-                    
+
                     <NodeEditor
                         actualNode={actualNode}
                         updateNodeLabel={updateNodeLabel}

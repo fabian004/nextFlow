@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, FormControl, InputLabel } from '@mui/material';
+import { TextField, FormControl } from '@mui/material';
 
 interface InputProps {
   value: string;
