@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ReactFlow, applyEdgeChanges, MarkerType, Node, EdgeChange, NodeChange } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { MessageNode, MultiSelectNode, TextAreaNode } from '../molecules/customNodes';
+import { EndNode, MessageNode, MultiSelectNode, StartNode, TextAreaNode } from '../molecules/customNodes';
 import { Box, SpeedDial, SpeedDialAction } from '@mui/material';
 import MessageIcon from '@mui/icons-material/Message';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
@@ -16,11 +16,16 @@ import {
   addNode as addReduxNode,
   addEdge as addReduxEdge,
 } from '@/redux/drawerSlice';
+import { NodeMessageTypes } from '@/constants/NodeMessageTypes';
+import { NodeMultiSelectTypes } from '@/constants/NodeMultiSelectTypes';
+import { MyNode } from '@/interfaces/MyNode';
 
 const nodeTypes = {
   messageNode: MessageNode,
   textAreaNode: TextAreaNode,
   multiSelectNode: MultiSelectNode,
+  startNode: StartNode,
+  endNode: EndNode,
 };
 
 const FlowEditor: React.FC = () => {
@@ -37,7 +42,6 @@ const FlowEditor: React.FC = () => {
         markerEnd: { type: MarkerType.ArrowClosed, width: 10, height: 10, color: 'black' },
         style: { stroke: 'black', strokeWidth: 2 },
       };
-      console.log('Adding new edge:', newEdge);
       dispatch(addReduxEdge(newEdge));
     },
     [dispatch]
@@ -60,20 +64,29 @@ const FlowEditor: React.FC = () => {
   };
 
   const addNode = (type: string, position: { x: number; y: number }) => {
-    const newNode = {
+    let label = "Nuevo Elemento"
+    if(type == "messageNode") label = NodeMessageTypes.Initial
+    
+    const newNode: MyNode = {
       id: (nodeCount + 1).toString(),
       type,
       position,
-      data: { label: `Node ${nodeCount + 1}` },
+      data: { label: label },
     };
+
+    if(type == "multiSelectNode") {
+      newNode.data.question = NodeMultiSelectTypes.Initial
+    }
+
     dispatch(addReduxNode(newNode));
     setNodeCount((count) => count + 1);
   };
 
   const onNodeClick = (event: any, node: Node) => {
-    console.log(node)
-    dispatch(setActualNode(node));
-    dispatch(openDrawer());
+    if(node.type !== "startNode" && node.type !== "endNode"){
+      dispatch(setActualNode(node));
+      dispatch(openDrawer());
+    }
   };
 
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, type: string) => {
@@ -104,7 +117,6 @@ const FlowEditor: React.FC = () => {
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={(changes) => {
-          console.log('onEdgesChange called', changes);
           onEdgesChange(changes);
         }}
         onConnect={onConnect}

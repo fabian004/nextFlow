@@ -1,20 +1,23 @@
 import React from 'react';
-import { TextField } from '@mui/material';
+import { TextField, FormControl, InputLabel } from '@mui/material';
 
 interface InputProps {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  label: string; // Etiqueta para el campo
 }
 
-const Input: React.FC<InputProps> = ({ value, onChange }) => {
+const Input: React.FC<InputProps> = ({ value, onChange, label }) => {
   return (
-    <TextField
-      variant="outlined"
-      fullWidth
-      value={value}
-      onChange={onChange}
-      sx={{ padding: '8px' }}
-    />
+    <FormControl fullWidth>
+      <TextField
+        label={label}
+        variant="outlined"
+        value={value}
+        onChange={onChange}
+        sx={{ padding: 2, pb: 0 }}
+      />
+    </FormControl>
   );
 };
 

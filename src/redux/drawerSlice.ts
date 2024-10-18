@@ -30,18 +30,29 @@ const drawerSlice = createSlice({
       state.actualNode = action.payload ? { ...action.payload } : null;
     },
     updateActualNodeLabel: (state, action: PayloadAction<string>) => {
-        if (state.actualNode) {
-            const updatedNode = { 
-            ...state.actualNode, 
-            data: { ...state.actualNode.data, label: action.payload }
-            };
-            state.actualNode = updatedNode;
-            state.nodes = state.nodes.map((node) =>
-            node.id === updatedNode.id ? updatedNode : node
-            );
-        }
+      if (state.actualNode) {
+          const updatedNode = { 
+          ...state.actualNode, 
+          data: { ...state.actualNode.data, label: action.payload }
+          };
+          state.actualNode = updatedNode;
+          state.nodes = state.nodes.map((node) =>
+          node.id === updatedNode.id ? updatedNode : node
+          );
+      }
     },
-      
+    updateActualNodeQuestion: (state, action: PayloadAction<string>) => {
+      if (state.actualNode) {
+          const updatedNode = { 
+          ...state.actualNode, 
+          data: { ...state.actualNode.data, question: action.payload }
+          };
+          state.actualNode = updatedNode;
+          state.nodes = state.nodes.map((node) =>
+          node.id === updatedNode.id ? updatedNode : node
+          );
+      }
+    },
     setNodes: (state, action: PayloadAction<NodeChange<Node>[]>) => {
         state.nodes = applyNodeChanges(action.payload, state.nodes);
     },
@@ -55,6 +66,14 @@ const drawerSlice = createSlice({
     addEdge: (state, action: PayloadAction<Edge>) => {
       state.edges = [...state.edges, action.payload];
     },
+    removeNode: (state) => {
+      if (state.actualNode) {
+        state.edges = state.edges.filter((edge) => edge.source !== state.actualNode?.id && edge.target !== state.actualNode?.id);
+        state.nodes = state.nodes.filter((node) => node.id !== state.actualNode?.id);
+        state.actualNode = null;
+        state.isOpen = false;
+      }
+    },
   },
 });
 
@@ -63,9 +82,11 @@ export const {
   closeDrawer,
   setActualNode,
   updateActualNodeLabel,
+  updateActualNodeQuestion,
   setNodes,
   setEdges,
   addNode,
   addEdge,
+  removeNode,
 } = drawerSlice.actions;
 export default drawerSlice.reducer;

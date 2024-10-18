@@ -17,7 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleDrawer, isDrawerOpen, drawerWidth
             position="fixed"
             sx={{
                 background:"#fafbfb",
-                zIndex: 1201,
+                zIndex: 600,
                 width: isSmallScreen ? '100%' : `calc(100% - ${isDrawerOpen ? drawerWidth : collapsedDrawerWidth}px)`,
                 ml: isSmallScreen ? 0 : 0,
                 pl: isSmallScreen ? 0 : 1.5,
