@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Node, Edge, NodeChange, applyNodeChanges } from '@xyflow/react';
 import { initialNodes, initialEdges } from '@/utils/initialStates';
+import { NodeOptions } from '@/interfaces/MyNode';
 
 interface DrawerState {
   isOpen: boolean;
@@ -53,6 +54,12 @@ const drawerSlice = createSlice({
           );
       }
     },
+    updateNodeOptions: (state, action: PayloadAction<{ nodeId: string, options: NodeOptions[] }>) => {
+      const { nodeId, options } = action.payload;
+      state.nodes = state.nodes.map(node =>
+        node.id === nodeId ? { ...node, data: { ...node.data, options } } : node
+      );
+    },
     setNodes: (state, action: PayloadAction<NodeChange<Node>[]>) => {
         state.nodes = applyNodeChanges(action.payload, state.nodes);
     },
@@ -74,6 +81,9 @@ const drawerSlice = createSlice({
         state.isOpen = false;
       }
     },
+    removeEdge: (state, action: PayloadAction<string>) => {
+      state.edges = state.edges.filter(edge => edge.id !== action.payload);
+    },
   },
 });
 
@@ -83,10 +93,12 @@ export const {
   setActualNode,
   updateActualNodeLabel,
   updateActualNodeQuestion,
+  updateNodeOptions,
   setNodes,
   setEdges,
   addNode,
   addEdge,
   removeNode,
+  removeEdge,
 } = drawerSlice.actions;
 export default drawerSlice.reducer;

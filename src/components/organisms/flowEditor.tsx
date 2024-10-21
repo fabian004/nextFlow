@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { ReactFlow, applyEdgeChanges, MarkerType, Node, EdgeChange, NodeChange } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { EndNode, MessageNode, MultiSelectNode, StartNode, TextAreaNode } from '../molecules/customNodes';
-import { Box, SpeedDial, SpeedDialAction } from '@mui/material';
+import { Box, Button, SpeedDial, SpeedDialAction } from '@mui/material';
 import MessageIcon from '@mui/icons-material/Message';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
@@ -19,6 +19,7 @@ import {
 import { NodeMessageTypes } from '@/constants/NodeMessageTypes';
 import { NodeMultiSelectTypes } from '@/constants/NodeMultiSelectTypes';
 import { MyNode } from '@/interfaces/MyNode';
+import { v4 as uuidv4 } from 'uuid';
 
 const nodeTypes = {
   messageNode: MessageNode,
@@ -35,19 +36,92 @@ const FlowEditor: React.FC = () => {
 
   const onConnect = useCallback(
     (params: any) => {
+      const { source, sourceHandle } = params;
+  
+      const existingEdges = edges.filter(edge => 
+        edge.source === source && (!sourceHandle || edge.sourceHandle === sourceHandle)
+      );
+  
+      if (existingEdges.length > 0) {
+        alert('Este nodo ya tiene una conexión de salida desde este punto.');
+        return;
+      }
+  
       const newEdge = {
-        id: `edge-${params.source}-${params.target}`,
+        id: `edge-${params.source}-${params.sourceHandle}-${params.target}`,
         ...params,
         animated: true,
         markerEnd: { type: MarkerType.ArrowClosed, width: 10, height: 10, color: 'black' },
         style: { stroke: 'black', strokeWidth: 2 },
       };
+  
       dispatch(addReduxEdge(newEdge));
     },
-    [dispatch]
+    [edges, dispatch]
   );
-  
 
+  const isTemplateValid = () => {
+    const visited = new Set();
+    const startNode = nodes.find(node => node.type === 'startNode');
+    const endNode = nodes.find(node => node.type === 'endNode');
+  
+    if (!startNode || !endNode) {
+      return false;
+    }
+  
+    const dfs = (nodeId: string): boolean => {
+      if (visited.has(nodeId)) {
+        return true;
+      }
+  
+      visited.add(nodeId);
+  
+      const outgoingEdges = edges.filter(edge => edge.source === nodeId);
+  
+      if (outgoingEdges.length === 0 && nodeId !== endNode.id) {
+        return false;
+      }
+  
+      const node = nodes.find(n => n.id === nodeId);
+      if (node?.type === 'multiSelectNode') {
+        const options = (node.data as Record<string, any>).options;
+  
+        for (const option of options) {
+          const optionEdge = outgoingEdges.find(edge => edge.sourceHandle === "option-"+option.id);
+  
+          if (!optionEdge) {
+            alert(`La opción ${option.label} del nodo ${nodeId} no tiene conexión`);
+            return false;
+          }
+
+          if (!dfs(optionEdge.target)) {
+            return false;
+          }
+        }
+      } else {
+        for (const edge of outgoingEdges) {
+          if (!dfs(edge.target)) {
+            return false;
+          }
+        }
+      }
+  
+      return nodeId === endNode.id || outgoingEdges.length > 0;
+    };
+  
+    const isStartToEndValid = dfs(startNode.id);
+  
+    return isStartToEndValid && visited.has(endNode.id) && nodes.every(node => visited.has(node.id));
+  };
+  
+  const saveTemplate = () => {
+    if (isTemplateValid()) {
+      alert('La plantilla es válida.');
+    }else{
+      alert('La plantilla no es válida. Algunos nodos no están conectados o no llegan al nodo de fin.');
+    }
+  };
+  
   const onDrop = (event: any) => {
     event.preventDefault();
     const reactFlowBounds = event.target.getBoundingClientRect();
@@ -74,8 +148,12 @@ const FlowEditor: React.FC = () => {
       data: { label: label },
     };
 
-    if(type == "multiSelectNode") {
-      newNode.data.question = NodeMultiSelectTypes.Initial
+    if (type === "multiSelectNode") {
+      newNode.data.question = NodeMultiSelectTypes.Initial;
+      newNode.data.options = [
+        { id: uuidv4(), label: "PIN" },
+        { id: uuidv4(), label: "Password" }
+      ];
     }
 
     dispatch(addReduxNode(newNode));
@@ -151,6 +229,23 @@ const FlowEditor: React.FC = () => {
           draggable
         />
       </SpeedDial>
+
+      <Button 
+        onClick={saveTemplate}
+        variant="contained" 
+        sx={{ 
+          position: 'absolute', 
+          top: 16, 
+          right: 16, 
+          backgroundColor: 'green', 
+          '&:hover': {
+            backgroundColor: 'darkgreen',
+          }
+        }}
+      >
+        Guardar
+      </Button>
+
     </Box>
   );
 };

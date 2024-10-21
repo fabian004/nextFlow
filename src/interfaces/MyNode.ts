@@ -1,12 +1,17 @@
-import { Node } from '@xyflow/react'; // Asegúrate de importar el tipo correcto
-
-// Define el tipo de datos del nodo
-export interface NodeData extends Record<string, unknown> { // Extiende Record para cumplir con la firma de índice
+import { Node } from '@xyflow/react'; 
+export interface NodeData extends Record<string, unknown> { 
   label: string;
-  question?: string; // Propiedad opcional
+  question?: string;
+  options?: NodeOptions[]
 }
 
-// Asegúrate de que la interfaz MyNode use el nuevo tipo NodeData
 export interface MyNode extends Node {
-  data: NodeData; // Usa el nuevo tipo aquí
+  id: string;
+  data: NodeData;
 }
+
+export interface NodeOptions {
+  id: string,
+  label:string
+}
+

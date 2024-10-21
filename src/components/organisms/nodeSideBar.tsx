@@ -31,6 +31,4 @@ const NodeSidebar: React.FC<NodeSidebarProps> = ({ onDragStart }) => {
   );
 };
 
-
-
 export default NodeSidebar;
